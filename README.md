@@ -9,7 +9,7 @@ Backend server for the Employee Time Tracker application at [emptracker-frontend
 * MongoDB  
  
 
-### Tools and API's used in frontend:
+### Tools and API's used in backend:
 - NodeJS
 - ExpressJS
 - Mongoose
