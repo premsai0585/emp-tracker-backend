@@ -103,7 +103,7 @@ app.post('/post/in/atnd', userCookieAuth, async (req, res) => {
     const date = moment().format('YYYY-MM-DD');
     const empAtnd = await Atnd.findOne({empID:req.body.empID, date});
     try {
-        if (!empAtnd){
+        if (!empAtnd && parseInt(moment().format('d')) != 0 && parseInt(moment().format('d')) != 6){
             const inTime = new Date();
             await Atnd.create({empID:req.body.empID, date, inTime, endTime:null});
             res.json({success:true, inTime});
@@ -118,7 +118,7 @@ app.post('/post/out/atnd', userCookieAuth, async (req, res) => {
     const date = moment().format('YYYY-MM-DD');
     const empAtnd = await Atnd.findOne({empID:req.body.empID, date});
     try {
-        if (empAtnd && empAtnd.endTime === null){
+        if (empAtnd && empAtnd.endTime === null && parseInt(moment().format('d')) != 0 && parseInt(moment().format('d')) != 6){
             const endTime = new Date();
             await Atnd.updateOne({empID:req.body.empID, date}, {endTime});
             res.json({success:true, endTime});
