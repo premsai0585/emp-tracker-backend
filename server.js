@@ -76,14 +76,28 @@ app.get('/logout', userCookieAuth, (req, res) => {
     res.sendStatus(200);
 })
 
+app.post('/Register',async(req,res)=>{
+    try{
+        const user = await Admin.findOne({empID:req.body.empID});
+        if(user){
+            res.json({msg:"Exists"});
+        }else{
+            const userC = await Admin.create({empID:req.body.empID,password:req.body.pass});
+            res.json({msg:"Created"})
+        }
+    }catch(err){
+        res.status(401);
+    }
+})
+
 app.get('/get/emps/count', userCookieAuth, async (req, res)=>{
-    const count = await Emp.countDocuments({});
+    const count = await Emp.countDocuments({fired:false});
     
     res.json({count});
 })
 
 app.get('/get/emps', userCookieAuth, async (req, res) => {
-    const employees = await Emp.find({}).select('empID empName role -_id').sort('empID');
+    const employees = await Emp.find({fired:false}).select('empID empName role fired -_id').sort('empID');
     res.json({employees: employees});
 })
 
@@ -92,10 +106,29 @@ app.post('/add/emp', userCookieAuth, async (req, res) => {
     const empID = "EMP"+("0000"+count).slice(-5);
     const joinDate  = new Date();
     try {
-        await Emp.create({empID, ...req.body, joinDate});
+        await Emp.create({empID, ...req.body, joinDate, fired:false});
         res.json({success:true, empID});
     } catch (error) {
         res.json({success:false});
+    }
+})
+
+app.post('/fire/emp', userCookieAuth, async (req, res) => {
+    const employee = await Emp.findOne({empID:req.body.empID});
+    if (employee){
+        if (!employee.fired){
+            try {
+                await Emp.updateOne({empID: req.body.empID}, {$set: {fired: true}});
+                await Atnd.deleteMany({empID: req.body.empID});
+                res.json({success:true});
+            } catch (error) {
+                res.json({success:false});
+            }
+        } else {
+            res.json({success:true});
+        }
+    } else {
+        res.sendStatus(401);
     }
 })
 

@@ -9,7 +9,8 @@ const empSchema = mongoose.Schema({
     mobile: String,
     bloodGP: String,
     joinDate: Date,
-    role: String
+    role: String,
+    fired: Boolean
 })
 
 const Emp = mongoose.model("Employee", empSchema);
